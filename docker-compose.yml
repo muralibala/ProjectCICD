@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  web:
+    build: ./html
+    links:
+      - server
+      
+  server:
+    build: .
+    links:
+      - db
+    restart: always
+
+  db:
+    image: mongo:latest

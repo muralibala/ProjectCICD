@@ -1,0 +1,43 @@
+machine:
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
+  services:
+    - docker
+  node:
+    # Circle will use node v5.9.1
+    version: 5.9.1
+
+## Customize dependencies
+dependencies:
+  pre:
+    - npm install mocha -g
+    - sudo pip install docker-compose
+    - docker-compose version
+    - docker version
+    
+test:
+  override:
+    - docker-compose up -d
+    - mocha test
+        
+deployment:
+  hub:
+    branch: [/.*/]
+    commands:
+      - docker images
+      - docker login -e $DOCKER_HUB_EMAIL -u $DOCKER_HUB_USER_ID -p $DOCKER_HUB_PWD
+      - docker tag projectcicd_web $DOCKER_HUB_USER_ID/web:$CIRCLE_SHA1
+      - docker tag projectcicd_web $DOCKER_HUB_USER_ID/web:latest
+      - docker push $DOCKER_HUB_USER_ID/web:$CIRCLE_SHA1
+      - docker push $DOCKER_HUB_USER_ID/web:latest
+      - docker tag projectcicd_server $DOCKER_HUB_USER_ID/server:$CIRCLE_SHA1
+      - docker tag projectcicd_server $DOCKER_HUB_USER_ID/server:latest
+      - docker push $DOCKER_HUB_USER_ID/server:$CIRCLE_SHA1
+      - docker push $DOCKER_HUB_USER_ID/server:latest
+      - docker tag mongo $DOCKER_HUB_USER_ID/mongo:$CIRCLE_SHA1
+      - docker tag mongo  $DOCKER_HUB_USER_ID/mongo:latest
+      - docker push $DOCKER_HUB_USER_ID/mongo:$CIRCLE_SHA1
+      - docker push $DOCKER_HUB_USER_ID/mongo:latest
+      
+      
+      
