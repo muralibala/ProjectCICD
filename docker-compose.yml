@@ -5,12 +5,18 @@ services:
     build: ./html
     links:
       - server
+    depends_on:
+      - server
+    restart: always
       
   server:
     build: .
     links:
       - db
+    depends_on:
+      - db
     restart: always
 
   db:
     image: mongo:latest
+    restart: always
