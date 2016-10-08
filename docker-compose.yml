@@ -1,5 +1,4 @@
 version: '2'
-
 services:
   web:
     build: ./html
@@ -8,6 +7,8 @@ services:
     depends_on:
       - server
     restart: always
+    networks:
+        - frontend
       
   server:
     build: .
@@ -16,9 +17,20 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+        - backend
+        - frontend
 
   db:
     image: mongo:latest
     restart: always
     volumes:
       - "./data:/data/db"
+    networks:
+        - backend
+      
+networks:
+    frontend:
+        driver: bridge
+    backend:
+        driver: bridge
