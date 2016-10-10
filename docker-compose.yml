@@ -2,7 +2,6 @@ version: '2'
 services:
   web:
     build: ./html
-    container: projectCICD-web
     links:
       - server
     depends_on:
